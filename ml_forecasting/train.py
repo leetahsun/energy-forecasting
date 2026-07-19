@@ -13,6 +13,9 @@ def get_feature_columns(df: pd.DataFrame, target_col: str) -> list[str]:
     Excludes the raw current-value columns for both targets
     """
     exclude = set(TARGET_COLUMNS)
+    other_targets = [t for t in TARGET_COLUMNS if t != target_col]
+    for other in other_targets:
+        exclude.update(c for c in df.columns if c.startswith(f"{other}_"))
     return [c for c in df.columns if c not in exclude]
 
 
