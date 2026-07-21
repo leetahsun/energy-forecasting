@@ -1,0 +1,72 @@
+name: Publish Combined Dashboard
+
+on:
+  schedule:
+    - cron: '30 6 * * *'   # daily, after both other workflows' typical run times
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: pip install -e .
+
+      - name: Run ML forecasting pipeline
+        run: python -m ml_forecasting.run_pipeline
+        continue-on-error: true  # don't let one module's failure block the other's dashboard
+
+      - name: Run solar forecasting pipeline
+        run: python -m solar_forecasting.run_pipeline
+        continue-on-error: true
+
+      - name: Assemble combined site
+        run: |
+          mkdir -p public
+          cp reports/ml_forecast/*/report.html public/ml_forecast.html 2>/dev/null || echo "ML report missing"
+          cp reports/solar_forecast/*/forecast.html public/solar_forecast.html 2>/dev/null || echo "Solar report missing"
+          cat > public/index.html << 'EOF'
+          <!DOCTYPE html>
+          <html>
+          <head>
+            <meta charset="utf-8">
+            <title>Energy Forecasting Dashboard</title>
+            <style>
+              body { font-family: -apple-system, sans-serif; max-width: 700px; margin: 60px auto; padding: 0 20px; }
+              h1 { font-size: 1.5rem; }
+              a { display: block; padding: 16px; margin: 12px 0; border: 1px solid #ddd; border-radius: 8px;
+                  text-decoration: none; color: #1565C0; font-weight: 600; }
+              a:hover { background: #f5f5f5; }
+              p.desc { color: #555; font-weight: 400; font-size: 0.9rem; margin: 4px 0 0; }
+            </style>
+          </head>
+          <body>
+            <h1>Energy Forecasting Dashboard</h1>
+            <a href="ml_forecast.html">
+              ML Forecasting: Price &amp; Renewable Share
+              <p class="desc">XGBoost vs. naive baseline, retrained weekly</p>
+            </a>
+            <a href="solar_forecast.html">
+              Solar Forecasting: Physical vs. ML
+              <p class="desc">Clear-sky model vs. weather-driven XGBoost, updated daily</p>
+            </a>
+          </body>
+          </html>
+          EOF
+
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: public/
+      - uses: actions/deploy-pages@v4
+        id: deployment

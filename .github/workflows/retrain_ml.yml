@@ -1,0 +1,43 @@
+name: ML Forecasting - Weekly Retrain
+
+on:
+  schedule:
+    - cron: '0 3 * * 0'   # weekly, Sunday 03:00 UTC -- see README for why
+                            # this retrains weekly rather than daily
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - 'ml_forecasting/**'
+      - 'shared/**'
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: pip install -e ".[dev]"
+      - run: python -m pytest tests/test_ml_forecasting/ -v
+
+  retrain_and_forecast:
+    needs: test
+    if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: pip install -e .
+      - run: python -m ml_forecasting.run_pipeline
+      - uses: actions/upload-artifact@v4
+        with:
+          name: ml-forecast-report
+          path: reports/ml_forecast/
+          retention-days: 90

@@ -1,0 +1,28 @@
+name: Solar Forecasting - Daily Run
+
+on:
+  schedule:
+    - cron: '0 5 * * *'   # daily, 05:00 UTC -- fresh weather forecast
+                            # matters more here than for the price/share
+                            # model, since weather updates continuously
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - 'solar_forecasting/**'
+      - 'shared/**'
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: pip install -e ".[dev]"
+      - run: python -m pytest tests/test_solar_forecasting/ -v
+

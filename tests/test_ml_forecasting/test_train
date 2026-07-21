@@ -1,0 +1,122 @@
+"""Tests for ml_forecasting/train.py.
+
+Uses synthetic data with a learnable daily pattern
+so we can assert XGBoost actually beats the naive baseline therefore
+proving  that the training/evaluation logic works correctly.
+"""
+
+import math
+import os
+import tempfile
+
+import numpy as np
+import pandas as pd
+import pytest
+
+from ml_forecasting.features import build_feature_matrix
+from ml_forecasting.train import (
+    get_feature_columns,
+    time_based_split,
+    naive_baseline_predict,
+    train_xgboost,
+    save_model,
+    load_model,
+    TARGET_COLUMNS,
+)
+
+HOUR_MS = 3_600_000
+START_TS = 1_704_067_200_000  # 2024-01-01 00:00:00 UTC
+
+
+def make_synthetic_feature_df(num_hours: int = 24 * 30) -> pd.DataFrame:
+    """Build a feature matrix with a clear sinusoidal daily pattern in
+    both price and renewable share, plus a little noise -- a model that
+    actually learns the calendar/lag structure should beat a naive
+    same-hour-last-week baseline on this, but not perfectly (noise).
+    """
+    rng = np.random.default_rng(42)
+    hours = np.arange(num_hours)
+
+    # solar peaks midday, price peaks in the evening
+    solar = np.clip(100 * np.sin((hours % 24) / 24 * math.pi), 0, None) + rng.normal(0, 2, num_hours)
+    gas = 200 + rng.normal(0, 2, num_hours)
+    price = 40 + 20 * np.sin(((hours % 24) - 6) / 24 * 2 * math.pi) + rng.normal(0, 1, num_hours)
+
+    generation = {
+        "solar": [(START_TS + i * HOUR_MS, float(v)) for i, v in enumerate(solar)],
+        "gas": [(START_TS + i * HOUR_MS, float(v)) for i, v in enumerate(gas)],
+    }
+    price_series = [(START_TS + i * HOUR_MS, float(v)) for i, v in enumerate(price)]
+
+    return build_feature_matrix(generation, price_series)
+
+
+def test_get_feature_columns_excludes_both_raw_targets_and_other_targets_engineered_columns():
+    df = make_synthetic_feature_df()
+    feature_cols = get_feature_columns(df, "price_eur_mwh")
+
+    assert "price_eur_mwh" not in feature_cols
+    assert "renewable_share_pct" not in feature_cols
+    # this target's own lag/rolling features should remain available
+    assert "price_eur_mwh_lag_24h" in feature_cols
+    assert "renewable_share_pct_lag_24h" not in feature_cols
+    assert "renewable_share_pct_rolling_24h_mean" not in feature_cols
+
+
+def test_time_based_split_preserves_chronological_order():
+    df = make_synthetic_feature_df()
+    train_df, test_df = time_based_split(df, test_fraction=0.2)
+
+    assert len(train_df) + len(test_df) == len(df)
+    # every train timestamp must come before every test timestamp
+    assert train_df.index.max() < test_df.index.min()
+
+
+def test_naive_baseline_predict_raises_if_lag_missing():
+    df = pd.DataFrame({"price_eur_mwh": [1.0, 2.0, 3.0]})
+    with pytest.raises(ValueError, match="lag_168h"):
+        naive_baseline_predict(df, "price_eur_mwh")
+
+
+def test_naive_baseline_predict_returns_lag_column():
+    df = make_synthetic_feature_df()
+    baseline = naive_baseline_predict(df, "price_eur_mwh")
+
+    assert (baseline == df["price_eur_mwh_lag_168h"]).all()
+
+
+def test_xgboost_beats_naive_baseline_on_learnable_pattern():
+    """ a trained model should have lower error than the naive persistence baseline.
+    If this fails, something in feature engineering or training is
+    likely broken.
+    """
+    df = make_synthetic_feature_df(num_hours=24 * 60)
+    train_df, test_df = time_based_split(df, test_fraction=0.2)
+
+    model, feature_cols = train_xgboost(train_df, "price_eur_mwh")
+    predictions = model.predict(test_df[feature_cols])
+
+    baseline_predictions = naive_baseline_predict(test_df, "price_eur_mwh")
+    actual = test_df["price_eur_mwh"]
+
+    xgb_mae = (predictions - actual).abs().mean()
+    baseline_mae = (baseline_predictions - actual).abs().mean()
+
+    assert xgb_mae < baseline_mae
+
+
+def test_save_and_load_model_roundtrip():
+    df = make_synthetic_feature_df()
+    train_df, _ = time_based_split(df, test_fraction=0.2)
+    model, feature_cols = train_xgboost(train_df, "price_eur_mwh")
+
+    with tempfile.TemporaryDirectory() as tmp_dir:
+        path = os.path.join(tmp_dir, "test_model.joblib")
+        save_model(model, feature_cols, path)
+
+        loaded_model, loaded_feature_cols = load_model(path)
+
+        assert loaded_feature_cols == feature_cols
+        original_preds = model.predict(train_df[feature_cols])
+        loaded_preds = loaded_model.predict(train_df[feature_cols])
+        assert (original_preds == loaded_preds).all()
