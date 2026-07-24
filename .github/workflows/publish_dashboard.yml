@@ -36,34 +36,7 @@ jobs:
           mkdir -p public
           cp reports/ml_forecast/*/report.html public/ml_forecast.html 2>/dev/null || echo "ML report missing"
           cp reports/solar_forecast/*/forecast.html public/solar_forecast.html 2>/dev/null || echo "Solar report missing"
-          cat > public/index.html << 'EOF'
-          <!DOCTYPE html>
-          <html>
-          <head>
-            <meta charset="utf-8">
-            <title>Energy Forecasting Dashboard</title>
-            <style>
-              body { font-family: -apple-system, sans-serif; max-width: 700px; margin: 60px auto; padding: 0 20px; }
-              h1 { font-size: 1.5rem; }
-              a { display: block; padding: 16px; margin: 12px 0; border: 1px solid #ddd; border-radius: 8px;
-                  text-decoration: none; color: #1565C0; font-weight: 600; }
-              a:hover { background: #f5f5f5; }
-              p.desc { color: #555; font-weight: 400; font-size: 0.9rem; margin: 4px 0 0; }
-            </style>
-          </head>
-          <body>
-            <h1>Energy Forecasting Dashboard</h1>
-            <a href="ml_forecast.html">
-              ML Forecasting: Price &amp; Renewable Share
-              <p class="desc">XGBoost vs. naive baseline, retrained weekly</p>
-            </a>
-            <a href="solar_forecast.html">
-              Solar Forecasting: Physical vs. ML
-              <p class="desc">Clear-sky model vs. weather-driven XGBoost, updated daily</p>
-            </a>
-          </body>
-          </html>
-          EOF
+          python -m shared.build_index public/index.html
 
       - uses: actions/upload-pages-artifact@v3
         with:
