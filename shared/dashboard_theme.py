@@ -54,9 +54,10 @@ BASE_CSS = f"""
   .shell {{ max-width: 880px; margin: 0 auto; padding: 0 24px; }}
 
   .site-header {{
-    padding: 28px 0 20px;
-    border-bottom: 1px solid var(--line);
-  }}
+  padding: 28px 0 20px;
+  background: var(--marigold);
+  border-bottom: 1px solid var(--line);
+}}
   .site-header .shell {{
     display: flex; align-items: baseline; justify-content: space-between;
     flex-wrap: wrap; gap: 8px;
