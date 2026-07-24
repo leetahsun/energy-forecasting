@@ -23,6 +23,18 @@ PRICE_FILTER = 4169  # DE/LU day-ahead price, EUR/MWh
 
 RENEWABLE_SOURCES = {"wind_onshore", "wind_offshore", "solar", "hydro", "biomass"}
 
+def _trim_trailing_unreported(series: list[tuple[int, float | None]]) -> list[tuple[int, float]]:
+    """SMARD returns explicit pairs for hours that haven't
+    been reported yet. Trim trailing None pairs so callers only see fully
+    reported data. None values in the middle of a series are left as-is
+    a genuine gap, not a reporting-lag artifact).
+    """
+    last_valid = -1
+    for i in range(len(series) - 1, -1, -1):
+        if series[i][1] is not None:
+            last_valid = i
+            break
+    return series[: last_valid + 1]
 
 def get_index_timestamps(filter_id: int) -> list[int]:
     """Get all available weekly bucket timestamps for each filter, starting with the oldest first. -> not
@@ -61,7 +73,7 @@ def fetch_history(filter_id: int, num_weeks: int = 8) -> list[tuple[int, float]]
     combined: list[tuple[int, float]] = []
     for ts in timestamps:
         combined.extend(get_series(filter_id, ts))
-    return combined
+    return _trim_trailing_unreported(combined)
 
 
 def fetch_all_generation_history(num_weeks: int = 8) -> dict[str, list[tuple[int, float]]]:
@@ -72,7 +84,7 @@ def fetch_all_generation_history(num_weeks: int = 8) -> dict[str, list[tuple[int
         combined: list[tuple[int, float]] = []
         for ts in timestamps:
             combined.extend(get_series(fid, ts))
-        data[name] = combined
+        data[name] = _trim_trailing_unreported(combined)
     return data
 
 

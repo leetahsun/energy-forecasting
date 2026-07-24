@@ -1,0 +1,899 @@
+{
+  "generated_at": "2026-07-24T10:44:40.525709+00:00",
+  "evaluation": {
+    "renewable_share_pct": {
+      "target": "renewable_share_pct",
+      "test_set_size": 358,
+      "xgboost": {
+        "mae": 8.050504370552002,
+        "rmse": 10.411596877535827
+      },
+      "naive_baseline": {
+        "mae": 11.2008485596875,
+        "rmse": 14.580396329491483
+      },
+      "xgboost_improvement_pct": 28.125942176146985,
+      "xgboost_beats_baseline": true
+    },
+    "price_eur_mwh": {
+      "target": "price_eur_mwh",
+      "test_set_size": 358,
+      "xgboost": {
+        "mae": 28.351049216253127,
+        "rmse": 34.198656094469214
+      },
+      "naive_baseline": {
+        "mae": 30.58444134078212,
+        "rmse": 40.716958702457795
+      },
+      "xgboost_improvement_pct": 7.302379990021031,
+      "xgboost_beats_baseline": true
+    }
+  },
+  "forecast": [
+    {
+      "timestamp": "2026-07-24T10:00:00Z",
+      "metric_name": "renewable_share_pct",
+      "model_name": "xgboost_v1",
+      "predicted_value": 87.64156341552734,
+      "actual_value": null,
+      "segment": "DE",
+      "schema_version": "1.0"
+    },
+    {
+      "timestamp": "2026-07-24T11:00:00Z",
+      "metric_name": "renewable_share_pct",
+      "model_name": "xgboost_v1",
+      "predicted_value": 89.16185760498047,
+      "actual_value": null,
+      "segment": "DE",
+      "schema_version": "1.0"
+    },
+    {
+      "timestamp": "2026-07-24T12:00:00Z",
+      "metric_name": "renewable_share_pct",
+      "model_name": "xgboost_v1",
+      "predicted_value": 89.99227905273438,
+      "actual_value": null,
+      "segment": "DE",
+      "schema_version": "1.0"
+    },
+    {
+      "timestamp": "2026-07-24T13:00:00Z",
+      "metric_name": "renewable_share_pct",
+      "model_name": "xgboost_v1",
+      "predicted_value": 89.46882629394531,
+      "actual_value": null,
+      "segment": "DE",
+      "schema_version": "1.0"
+    },
+    {
+      "timestamp": "2026-07-24T14:00:00Z",
+      "metric_name": "renewable_share_pct",
+      "model_name": "xgboost_v1",
+      "predicted_value": 87.4283676147461,
+      "actual_value": null,
+      "segment": "DE",
+      "schema_version": "1.0"
+    },
+    {
+      "timestamp": "2026-07-24T15:00:00Z",
+      "metric_name": "renewable_share_pct",
+      "model_name": "xgboost_v1",
+      "predicted_value": 81.9554672241211,
+      "actual_value": null,
+      "segment": "DE",
+      "schema_version": "1.0"
+    },
+    {
+      "timestamp": "2026-07-24T16:00:00Z",
+      "metric_name": "renewable_share_pct",
+      "model_name": "xgboost_v1",
+      "predicted_value": 76.83658599853516,
+      "actual_value": null,
+      "segment": "DE",
+      "schema_version": "1.0"
+    },
+    {
+      "timestamp": "2026-07-24T17:00:00Z",
+      "metric_name": "renewable_share_pct",
+      "model_name": "xgboost_v1",
+      "predicted_value": 75.9267578125,
+      "actual_value": null,
+      "segment": "DE",
+      "schema_version": "1.0"
+    },
+    {
+      "timestamp": "2026-07-24T18:00:00Z",
+      "metric_name": "renewable_share_pct",
+      "model_name": "xgboost_v1",
+      "predicted_value": 71.89082336425781,
+      "actual_value": null,
+      "segment": "DE",
+      "schema_version": "1.0"
+    },
+    {
+      "timestamp": "2026-07-24T19:00:00Z",
+      "metric_name": "renewable_share_pct",
+      "model_name": "xgboost_v1",
+      "predicted_value": 72.84300231933594,
+      "actual_value": null,
+      "segment": "DE",
+      "schema_version": "1.0"
+    },
+    {
+      "timestamp": "2026-07-24T20:00:00Z",
+      "metric_name": "renewable_share_pct",
+      "model_name": "xgboost_v1",
+      "predicted_value": 73.12471771240234,
+      "actual_value": null,
+      "segment": "DE",
+      "schema_version": "1.0"
+    },
+    {
+      "timestamp": "2026-07-24T21:00:00Z",
+      "metric_name": "renewable_share_pct",
+      "model_name": "xgboost_v1",
+      "predicted_value": 69.90823364257812,
+      "actual_value": null,
+      "segment": "DE",
+      "schema_version": "1.0"
+    },
+    {
+      "timestamp": "2026-07-24T22:00:00Z",
+      "metric_name": "renewable_share_pct",
+      "model_name": "xgboost_v1",
+      "predicted_value": 70.9837875366211,
+      "actual_value": null,
+      "segment": "DE",
+      "schema_version": "1.0"
+    },
+    {
+      "timestamp": "2026-07-24T23:00:00Z",
+      "metric_name": "renewable_share_pct",
+      "model_name": "xgboost_v1",
+      "predicted_value": 69.97025299072266,
+      "actual_value": null,
+      "segment": "DE",
+      "schema_version": "1.0"
+    },
+    {
+      "timestamp": "2026-07-25T00:00:00Z",
+      "metric_name": "renewable_share_pct",
+      "model_name": "xgboost_v1",
+      "predicted_value": 63.31523132324219,
+      "actual_value": null,
+      "segment": "DE",
+      "schema_version": "1.0"
+    },
+    {
+      "timestamp": "2026-07-25T01:00:00Z",
+      "metric_name": "renewable_share_pct",
+      "model_name": "xgboost_v1",
+      "predicted_value": 64.60579681396484,
+      "actual_value": null,
+      "segment": "DE",
+      "schema_version": "1.0"
+    },
+    {
+      "timestamp": "2026-07-25T02:00:00Z",
+      "metric_name": "renewable_share_pct",
+      "model_name": "xgboost_v1",
+      "predicted_value": 67.03675079345703,
+      "actual_value": null,
+      "segment": "DE",
+      "schema_version": "1.0"
+    },
+    {
+      "timestamp": "2026-07-25T03:00:00Z",
+      "metric_name": "renewable_share_pct",
+      "model_name": "xgboost_v1",
+      "predicted_value": 73.05296325683594,
+      "actual_value": null,
+      "segment": "DE",
+      "schema_version": "1.0"
+    },
+    {
+      "timestamp": "2026-07-25T04:00:00Z",
+      "metric_name": "renewable_share_pct",
+      "model_name": "xgboost_v1",
+      "predicted_value": 78.24341583251953,
+      "actual_value": null,
+      "segment": "DE",
+      "schema_version": "1.0"
+    },
+    {
+      "timestamp": "2026-07-25T05:00:00Z",
+      "metric_name": "renewable_share_pct",
+      "model_name": "xgboost_v1",
+      "predicted_value": 89.23467254638672,
+      "actual_value": null,
+      "segment": "DE",
+      "schema_version": "1.0"
+    },
+    {
+      "timestamp": "2026-07-25T06:00:00Z",
+      "metric_name": "renewable_share_pct",
+      "model_name": "xgboost_v1",
+      "predicted_value": 89.16991424560547,
+      "actual_value": null,
+      "segment": "DE",
+      "schema_version": "1.0"
+    },
+    {
+      "timestamp": "2026-07-25T07:00:00Z",
+      "metric_name": "renewable_share_pct",
+      "model_name": "xgboost_v1",
+      "predicted_value": 93.84400177001953,
+      "actual_value": null,
+      "segment": "DE",
+      "schema_version": "1.0"
+    },
+    {
+      "timestamp": "2026-07-25T08:00:00Z",
+      "metric_name": "renewable_share_pct",
+      "model_name": "xgboost_v1",
+      "predicted_value": 91.44197082519531,
+      "actual_value": null,
+      "segment": "DE",
+      "schema_version": "1.0"
+    },
+    {
+      "timestamp": "2026-07-25T09:00:00Z",
+      "metric_name": "renewable_share_pct",
+      "model_name": "xgboost_v1",
+      "predicted_value": 93.3547134399414,
+      "actual_value": null,
+      "segment": "DE",
+      "schema_version": "1.0"
+    },
+    {
+      "timestamp": "2026-07-24T10:00:00Z",
+      "metric_name": "renewable_share_pct",
+      "model_name": "naive_baseline",
+      "predicted_value": 78.05478333120365,
+      "actual_value": null,
+      "segment": "DE",
+      "schema_version": "1.0"
+    },
+    {
+      "timestamp": "2026-07-24T11:00:00Z",
+      "metric_name": "renewable_share_pct",
+      "model_name": "naive_baseline",
+      "predicted_value": 79.53147123646112,
+      "actual_value": null,
+      "segment": "DE",
+      "schema_version": "1.0"
+    },
+    {
+      "timestamp": "2026-07-24T12:00:00Z",
+      "metric_name": "renewable_share_pct",
+      "model_name": "naive_baseline",
+      "predicted_value": 79.99165613016925,
+      "actual_value": null,
+      "segment": "DE",
+      "schema_version": "1.0"
+    },
+    {
+      "timestamp": "2026-07-24T13:00:00Z",
+      "metric_name": "renewable_share_pct",
+      "model_name": "naive_baseline",
+      "predicted_value": 78.02233878815859,
+      "actual_value": null,
+      "segment": "DE",
+      "schema_version": "1.0"
+    },
+    {
+      "timestamp": "2026-07-24T14:00:00Z",
+      "metric_name": "renewable_share_pct",
+      "model_name": "naive_baseline",
+      "predicted_value": 74.29642640428001,
+      "actual_value": null,
+      "segment": "DE",
+      "schema_version": "1.0"
+    },
+    {
+      "timestamp": "2026-07-24T15:00:00Z",
+      "metric_name": "renewable_share_pct",
+      "model_name": "naive_baseline",
+      "predicted_value": 69.77497177219657,
+      "actual_value": null,
+      "segment": "DE",
+      "schema_version": "1.0"
+    },
+    {
+      "timestamp": "2026-07-24T16:00:00Z",
+      "metric_name": "renewable_share_pct",
+      "model_name": "naive_baseline",
+      "predicted_value": 62.89457915405811,
+      "actual_value": null,
+      "segment": "DE",
+      "schema_version": "1.0"
+    },
+    {
+      "timestamp": "2026-07-24T17:00:00Z",
+      "metric_name": "renewable_share_pct",
+      "model_name": "naive_baseline",
+      "predicted_value": 56.20874660428302,
+      "actual_value": null,
+      "segment": "DE",
+      "schema_version": "1.0"
+    },
+    {
+      "timestamp": "2026-07-24T18:00:00Z",
+      "metric_name": "renewable_share_pct",
+      "model_name": "naive_baseline",
+      "predicted_value": 50.652731774214345,
+      "actual_value": null,
+      "segment": "DE",
+      "schema_version": "1.0"
+    },
+    {
+      "timestamp": "2026-07-24T19:00:00Z",
+      "metric_name": "renewable_share_pct",
+      "model_name": "naive_baseline",
+      "predicted_value": 48.415406786143954,
+      "actual_value": null,
+      "segment": "DE",
+      "schema_version": "1.0"
+    },
+    {
+      "timestamp": "2026-07-24T20:00:00Z",
+      "metric_name": "renewable_share_pct",
+      "model_name": "naive_baseline",
+      "predicted_value": 48.410493022197144,
+      "actual_value": null,
+      "segment": "DE",
+      "schema_version": "1.0"
+    },
+    {
+      "timestamp": "2026-07-24T21:00:00Z",
+      "metric_name": "renewable_share_pct",
+      "model_name": "naive_baseline",
+      "predicted_value": 50.41407561648904,
+      "actual_value": null,
+      "segment": "DE",
+      "schema_version": "1.0"
+    },
+    {
+      "timestamp": "2026-07-24T22:00:00Z",
+      "metric_name": "renewable_share_pct",
+      "model_name": "naive_baseline",
+      "predicted_value": 52.438381045694896,
+      "actual_value": null,
+      "segment": "DE",
+      "schema_version": "1.0"
+    },
+    {
+      "timestamp": "2026-07-24T23:00:00Z",
+      "metric_name": "renewable_share_pct",
+      "model_name": "naive_baseline",
+      "predicted_value": 54.7028339361502,
+      "actual_value": null,
+      "segment": "DE",
+      "schema_version": "1.0"
+    },
+    {
+      "timestamp": "2026-07-25T00:00:00Z",
+      "metric_name": "renewable_share_pct",
+      "model_name": "naive_baseline",
+      "predicted_value": 58.45034270574023,
+      "actual_value": null,
+      "segment": "DE",
+      "schema_version": "1.0"
+    },
+    {
+      "timestamp": "2026-07-25T01:00:00Z",
+      "metric_name": "renewable_share_pct",
+      "model_name": "naive_baseline",
+      "predicted_value": 61.014433614453246,
+      "actual_value": null,
+      "segment": "DE",
+      "schema_version": "1.0"
+    },
+    {
+      "timestamp": "2026-07-25T02:00:00Z",
+      "metric_name": "renewable_share_pct",
+      "model_name": "naive_baseline",
+      "predicted_value": 62.12124555697084,
+      "actual_value": null,
+      "segment": "DE",
+      "schema_version": "1.0"
+    },
+    {
+      "timestamp": "2026-07-25T03:00:00Z",
+      "metric_name": "renewable_share_pct",
+      "model_name": "naive_baseline",
+      "predicted_value": 63.72408489313932,
+      "actual_value": null,
+      "segment": "DE",
+      "schema_version": "1.0"
+    },
+    {
+      "timestamp": "2026-07-25T04:00:00Z",
+      "metric_name": "renewable_share_pct",
+      "model_name": "naive_baseline",
+      "predicted_value": 66.84675235627043,
+      "actual_value": null,
+      "segment": "DE",
+      "schema_version": "1.0"
+    },
+    {
+      "timestamp": "2026-07-25T05:00:00Z",
+      "metric_name": "renewable_share_pct",
+      "model_name": "naive_baseline",
+      "predicted_value": 73.32390085046666,
+      "actual_value": null,
+      "segment": "DE",
+      "schema_version": "1.0"
+    },
+    {
+      "timestamp": "2026-07-25T06:00:00Z",
+      "metric_name": "renewable_share_pct",
+      "model_name": "naive_baseline",
+      "predicted_value": 82.06766423976438,
+      "actual_value": null,
+      "segment": "DE",
+      "schema_version": "1.0"
+    },
+    {
+      "timestamp": "2026-07-25T07:00:00Z",
+      "metric_name": "renewable_share_pct",
+      "model_name": "naive_baseline",
+      "predicted_value": 89.526063934543,
+      "actual_value": null,
+      "segment": "DE",
+      "schema_version": "1.0"
+    },
+    {
+      "timestamp": "2026-07-25T08:00:00Z",
+      "metric_name": "renewable_share_pct",
+      "model_name": "naive_baseline",
+      "predicted_value": 92.84860830545178,
+      "actual_value": null,
+      "segment": "DE",
+      "schema_version": "1.0"
+    },
+    {
+      "timestamp": "2026-07-25T09:00:00Z",
+      "metric_name": "renewable_share_pct",
+      "model_name": "naive_baseline",
+      "predicted_value": 93.50401993954222,
+      "actual_value": null,
+      "segment": "DE",
+      "schema_version": "1.0"
+    },
+    {
+      "timestamp": "2026-07-24T10:00:00Z",
+      "metric_name": "price_eur_mwh",
+      "model_name": "xgboost_v1",
+      "predicted_value": 22.18308448791504,
+      "actual_value": null,
+      "segment": "DE",
+      "schema_version": "1.0"
+    },
+    {
+      "timestamp": "2026-07-24T11:00:00Z",
+      "metric_name": "price_eur_mwh",
+      "model_name": "xgboost_v1",
+      "predicted_value": 14.036822319030762,
+      "actual_value": null,
+      "segment": "DE",
+      "schema_version": "1.0"
+    },
+    {
+      "timestamp": "2026-07-24T12:00:00Z",
+      "metric_name": "price_eur_mwh",
+      "model_name": "xgboost_v1",
+      "predicted_value": 17.85872459411621,
+      "actual_value": null,
+      "segment": "DE",
+      "schema_version": "1.0"
+    },
+    {
+      "timestamp": "2026-07-24T13:00:00Z",
+      "metric_name": "price_eur_mwh",
+      "model_name": "xgboost_v1",
+      "predicted_value": 21.00494956970215,
+      "actual_value": null,
+      "segment": "DE",
+      "schema_version": "1.0"
+    },
+    {
+      "timestamp": "2026-07-24T14:00:00Z",
+      "metric_name": "price_eur_mwh",
+      "model_name": "xgboost_v1",
+      "predicted_value": 54.37324523925781,
+      "actual_value": null,
+      "segment": "DE",
+      "schema_version": "1.0"
+    },
+    {
+      "timestamp": "2026-07-24T15:00:00Z",
+      "metric_name": "price_eur_mwh",
+      "model_name": "xgboost_v1",
+      "predicted_value": 69.87625885009766,
+      "actual_value": null,
+      "segment": "DE",
+      "schema_version": "1.0"
+    },
+    {
+      "timestamp": "2026-07-24T16:00:00Z",
+      "metric_name": "price_eur_mwh",
+      "model_name": "xgboost_v1",
+      "predicted_value": 103.2909164428711,
+      "actual_value": null,
+      "segment": "DE",
+      "schema_version": "1.0"
+    },
+    {
+      "timestamp": "2026-07-24T17:00:00Z",
+      "metric_name": "price_eur_mwh",
+      "model_name": "xgboost_v1",
+      "predicted_value": 152.68264770507812,
+      "actual_value": null,
+      "segment": "DE",
+      "schema_version": "1.0"
+    },
+    {
+      "timestamp": "2026-07-24T18:00:00Z",
+      "metric_name": "price_eur_mwh",
+      "model_name": "xgboost_v1",
+      "predicted_value": 197.60317993164062,
+      "actual_value": null,
+      "segment": "DE",
+      "schema_version": "1.0"
+    },
+    {
+      "timestamp": "2026-07-24T19:00:00Z",
+      "metric_name": "price_eur_mwh",
+      "model_name": "xgboost_v1",
+      "predicted_value": 234.62599182128906,
+      "actual_value": null,
+      "segment": "DE",
+      "schema_version": "1.0"
+    },
+    {
+      "timestamp": "2026-07-24T20:00:00Z",
+      "metric_name": "price_eur_mwh",
+      "model_name": "xgboost_v1",
+      "predicted_value": 190.24224853515625,
+      "actual_value": null,
+      "segment": "DE",
+      "schema_version": "1.0"
+    },
+    {
+      "timestamp": "2026-07-24T21:00:00Z",
+      "metric_name": "price_eur_mwh",
+      "model_name": "xgboost_v1",
+      "predicted_value": 107.32597351074219,
+      "actual_value": null,
+      "segment": "DE",
+      "schema_version": "1.0"
+    },
+    {
+      "timestamp": "2026-07-24T22:00:00Z",
+      "metric_name": "price_eur_mwh",
+      "model_name": "xgboost_v1",
+      "predicted_value": 129.79383850097656,
+      "actual_value": null,
+      "segment": "DE",
+      "schema_version": "1.0"
+    },
+    {
+      "timestamp": "2026-07-24T23:00:00Z",
+      "metric_name": "price_eur_mwh",
+      "model_name": "xgboost_v1",
+      "predicted_value": 130.7005157470703,
+      "actual_value": null,
+      "segment": "DE",
+      "schema_version": "1.0"
+    },
+    {
+      "timestamp": "2026-07-25T00:00:00Z",
+      "metric_name": "price_eur_mwh",
+      "model_name": "xgboost_v1",
+      "predicted_value": 103.08990478515625,
+      "actual_value": null,
+      "segment": "DE",
+      "schema_version": "1.0"
+    },
+    {
+      "timestamp": "2026-07-25T01:00:00Z",
+      "metric_name": "price_eur_mwh",
+      "model_name": "xgboost_v1",
+      "predicted_value": 105.06548309326172,
+      "actual_value": null,
+      "segment": "DE",
+      "schema_version": "1.0"
+    },
+    {
+      "timestamp": "2026-07-25T02:00:00Z",
+      "metric_name": "price_eur_mwh",
+      "model_name": "xgboost_v1",
+      "predicted_value": 103.8851318359375,
+      "actual_value": null,
+      "segment": "DE",
+      "schema_version": "1.0"
+    },
+    {
+      "timestamp": "2026-07-25T03:00:00Z",
+      "metric_name": "price_eur_mwh",
+      "model_name": "xgboost_v1",
+      "predicted_value": 100.80847930908203,
+      "actual_value": null,
+      "segment": "DE",
+      "schema_version": "1.0"
+    },
+    {
+      "timestamp": "2026-07-25T04:00:00Z",
+      "metric_name": "price_eur_mwh",
+      "model_name": "xgboost_v1",
+      "predicted_value": 93.85411834716797,
+      "actual_value": null,
+      "segment": "DE",
+      "schema_version": "1.0"
+    },
+    {
+      "timestamp": "2026-07-25T05:00:00Z",
+      "metric_name": "price_eur_mwh",
+      "model_name": "xgboost_v1",
+      "predicted_value": 93.00048065185547,
+      "actual_value": null,
+      "segment": "DE",
+      "schema_version": "1.0"
+    },
+    {
+      "timestamp": "2026-07-25T06:00:00Z",
+      "metric_name": "price_eur_mwh",
+      "model_name": "xgboost_v1",
+      "predicted_value": 94.2911605834961,
+      "actual_value": null,
+      "segment": "DE",
+      "schema_version": "1.0"
+    },
+    {
+      "timestamp": "2026-07-25T07:00:00Z",
+      "metric_name": "price_eur_mwh",
+      "model_name": "xgboost_v1",
+      "predicted_value": 68.11039733886719,
+      "actual_value": null,
+      "segment": "DE",
+      "schema_version": "1.0"
+    },
+    {
+      "timestamp": "2026-07-25T08:00:00Z",
+      "metric_name": "price_eur_mwh",
+      "model_name": "xgboost_v1",
+      "predicted_value": 41.93172073364258,
+      "actual_value": null,
+      "segment": "DE",
+      "schema_version": "1.0"
+    },
+    {
+      "timestamp": "2026-07-25T09:00:00Z",
+      "metric_name": "price_eur_mwh",
+      "model_name": "xgboost_v1",
+      "predicted_value": 10.343088150024414,
+      "actual_value": null,
+      "segment": "DE",
+      "schema_version": "1.0"
+    },
+    {
+      "timestamp": "2026-07-24T10:00:00Z",
+      "metric_name": "price_eur_mwh",
+      "model_name": "naive_baseline",
+      "predicted_value": 103.89,
+      "actual_value": null,
+      "segment": "DE",
+      "schema_version": "1.0"
+    },
+    {
+      "timestamp": "2026-07-24T11:00:00Z",
+      "metric_name": "price_eur_mwh",
+      "model_name": "naive_baseline",
+      "predicted_value": 98.2,
+      "actual_value": null,
+      "segment": "DE",
+      "schema_version": "1.0"
+    },
+    {
+      "timestamp": "2026-07-24T12:00:00Z",
+      "metric_name": "price_eur_mwh",
+      "model_name": "naive_baseline",
+      "predicted_value": 98.43,
+      "actual_value": null,
+      "segment": "DE",
+      "schema_version": "1.0"
+    },
+    {
+      "timestamp": "2026-07-24T13:00:00Z",
+      "metric_name": "price_eur_mwh",
+      "model_name": "naive_baseline",
+      "predicted_value": 105.98,
+      "actual_value": null,
+      "segment": "DE",
+      "schema_version": "1.0"
+    },
+    {
+      "timestamp": "2026-07-24T14:00:00Z",
+      "metric_name": "price_eur_mwh",
+      "model_name": "naive_baseline",
+      "predicted_value": 114.7,
+      "actual_value": null,
+      "segment": "DE",
+      "schema_version": "1.0"
+    },
+    {
+      "timestamp": "2026-07-24T15:00:00Z",
+      "metric_name": "price_eur_mwh",
+      "model_name": "naive_baseline",
+      "predicted_value": 127.43,
+      "actual_value": null,
+      "segment": "DE",
+      "schema_version": "1.0"
+    },
+    {
+      "timestamp": "2026-07-24T16:00:00Z",
+      "metric_name": "price_eur_mwh",
+      "model_name": "naive_baseline",
+      "predicted_value": 137.58,
+      "actual_value": null,
+      "segment": "DE",
+      "schema_version": "1.0"
+    },
+    {
+      "timestamp": "2026-07-24T17:00:00Z",
+      "metric_name": "price_eur_mwh",
+      "model_name": "naive_baseline",
+      "predicted_value": 151.03,
+      "actual_value": null,
+      "segment": "DE",
+      "schema_version": "1.0"
+    },
+    {
+      "timestamp": "2026-07-24T18:00:00Z",
+      "metric_name": "price_eur_mwh",
+      "model_name": "naive_baseline",
+      "predicted_value": 159.07,
+      "actual_value": null,
+      "segment": "DE",
+      "schema_version": "1.0"
+    },
+    {
+      "timestamp": "2026-07-24T19:00:00Z",
+      "metric_name": "price_eur_mwh",
+      "model_name": "naive_baseline",
+      "predicted_value": 166.86,
+      "actual_value": null,
+      "segment": "DE",
+      "schema_version": "1.0"
+    },
+    {
+      "timestamp": "2026-07-24T20:00:00Z",
+      "metric_name": "price_eur_mwh",
+      "model_name": "naive_baseline",
+      "predicted_value": 164.68,
+      "actual_value": null,
+      "segment": "DE",
+      "schema_version": "1.0"
+    },
+    {
+      "timestamp": "2026-07-24T21:00:00Z",
+      "metric_name": "price_eur_mwh",
+      "model_name": "naive_baseline",
+      "predicted_value": 158.3,
+      "actual_value": null,
+      "segment": "DE",
+      "schema_version": "1.0"
+    },
+    {
+      "timestamp": "2026-07-24T22:00:00Z",
+      "metric_name": "price_eur_mwh",
+      "model_name": "naive_baseline",
+      "predicted_value": 156.2,
+      "actual_value": null,
+      "segment": "DE",
+      "schema_version": "1.0"
+    },
+    {
+      "timestamp": "2026-07-24T23:00:00Z",
+      "metric_name": "price_eur_mwh",
+      "model_name": "naive_baseline",
+      "predicted_value": 145.38,
+      "actual_value": null,
+      "segment": "DE",
+      "schema_version": "1.0"
+    },
+    {
+      "timestamp": "2026-07-25T00:00:00Z",
+      "metric_name": "price_eur_mwh",
+      "model_name": "naive_baseline",
+      "predicted_value": 142.0,
+      "actual_value": null,
+      "segment": "DE",
+      "schema_version": "1.0"
+    },
+    {
+      "timestamp": "2026-07-25T01:00:00Z",
+      "metric_name": "price_eur_mwh",
+      "model_name": "naive_baseline",
+      "predicted_value": 135.3,
+      "actual_value": null,
+      "segment": "DE",
+      "schema_version": "1.0"
+    },
+    {
+      "timestamp": "2026-07-25T02:00:00Z",
+      "metric_name": "price_eur_mwh",
+      "model_name": "naive_baseline",
+      "predicted_value": 134.81,
+      "actual_value": null,
+      "segment": "DE",
+      "schema_version": "1.0"
+    },
+    {
+      "timestamp": "2026-07-25T03:00:00Z",
+      "metric_name": "price_eur_mwh",
+      "model_name": "naive_baseline",
+      "predicted_value": 132.23,
+      "actual_value": null,
+      "segment": "DE",
+      "schema_version": "1.0"
+    },
+    {
+      "timestamp": "2026-07-25T04:00:00Z",
+      "metric_name": "price_eur_mwh",
+      "model_name": "naive_baseline",
+      "predicted_value": 126.51,
+      "actual_value": null,
+      "segment": "DE",
+      "schema_version": "1.0"
+    },
+    {
+      "timestamp": "2026-07-25T05:00:00Z",
+      "metric_name": "price_eur_mwh",
+      "model_name": "naive_baseline",
+      "predicted_value": 119.3,
+      "actual_value": null,
+      "segment": "DE",
+      "schema_version": "1.0"
+    },
+    {
+      "timestamp": "2026-07-25T06:00:00Z",
+      "metric_name": "price_eur_mwh",
+      "model_name": "naive_baseline",
+      "predicted_value": 97.54,
+      "actual_value": null,
+      "segment": "DE",
+      "schema_version": "1.0"
+    },
+    {
+      "timestamp": "2026-07-25T07:00:00Z",
+      "metric_name": "price_eur_mwh",
+      "model_name": "naive_baseline",
+      "predicted_value": 44.93,
+      "actual_value": null,
+      "segment": "DE",
+      "schema_version": "1.0"
+    },
+    {
+      "timestamp": "2026-07-25T08:00:00Z",
+      "metric_name": "price_eur_mwh",
+      "model_name": "naive_baseline",
+      "predicted_value": 9.97,
+      "actual_value": null,
+      "segment": "DE",
+      "schema_version": "1.0"
+    },
+    {
+      "timestamp": "2026-07-25T09:00:00Z",
+      "metric_name": "price_eur_mwh",
+      "model_name": "naive_baseline",
+      "predicted_value": -0.01,
+      "actual_value": null,
+      "segment": "DE",
+      "schema_version": "1.0"
+    }
+  ]
+}

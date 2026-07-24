@@ -1,8 +1,14 @@
-"""
-End-to-end ML forecasting pipeline.
+"""End-to-end ML forecasting pipeline.
 
 Fetches historical SMARD data, builds features, trains models for both
-targets.
+targets, evaluates each against the naive baseline, generates a
+forecast_horizon_hours-ahead forecast for both, and saves everything to
+one JSON report.
+
+This is what retrain_ml.yml's GitHub Actions workflow should call --
+previously that workflow ran evaluate.py and predict.py as two separate
+steps; this ties them into one script and one output file, matching the
+pattern already used by solar_forecasting/run_pipeline.py.
 """
 
 import datetime
@@ -12,6 +18,7 @@ import os
 from ml_forecasting.evaluate import evaluate_all, format_evaluation_summary
 from ml_forecasting.features import build_base_dataframe, build_feature_matrix
 from ml_forecasting.predict import generate_all_forecasts
+from ml_forecasting.report import build_report
 from ml_forecasting.train import train_all_targets
 from shared.smard_client import fetch_all_generation_history, fetch_price_history
 
@@ -26,22 +33,39 @@ def main(
         out_dir = f"reports/ml_forecast/{datetime.date.today().isoformat()}"
     os.makedirs(out_dir, exist_ok=True)
 
-    print("Fetching SMARD history:")
+    print("Fetching SMARD history...")
     generation = fetch_all_generation_history(num_weeks=num_weeks_history)
     price_series = fetch_price_history(num_weeks=num_weeks_history)
 
-    print("Building feature matrix:")
+    print("Building feature matrix...")
     feature_df = build_feature_matrix(generation, price_series)
 
-    print(f"Training on {len(feature_df)} rows:")
+    print(f"Training on {len(feature_df)} rows...")
     train_results = train_all_targets(feature_df, models_dir=models_dir)
 
-    print("Evaluating against naive baseline:")
+    print("Evaluating against naive baseline...")
     evaluation = evaluate_all(train_results)
     print(format_evaluation_summary(evaluation))
 
-    print("Generating forecast:")
-    history_df = build_base_dataframe(generation, price_series)
+    print("Generating forecast...")
+    # For the forward forecast, reuse the raw (pre-feature-engineered)
+    # history: predict.py's recursive forecasting builds its own feature
+    # rows internally and expects build_base_dataframe's plain output,
+    # not the already-lagged feature_df used for training/evaluation.
+    #
+    # IMPORTANT: .dropna() here is not optional. Day-ahead price is
+    # published in advance of the delivery hour, but actual generation is
+    # metered and reported after the fact -- so the raw combined frame's
+    # most recent rows are commonly a block where generation is NaN
+    # (not yet reported) while price may still have real values for a
+    # while longer, before it too runs out. Without dropping these,
+    # recursive_forecast() would anchor its "last known hour" on
+    # history_df's literal last row, which can be a NaN placeholder --
+    # not a real observation -- and forecast forward from the wrong
+    # point in time using corrupted lag features. Confirmed against
+    # live SMARD data during manual testing (a contiguous trailing block
+    # of ~130 NaN hours), not just a theoretical concern.
+    history_df = build_base_dataframe(generation, price_series).dropna()
     forecasts = generate_all_forecasts(
         history_df, horizon_hours=forecast_horizon_hours, models_dir=models_dir
     )
@@ -57,6 +81,11 @@ def main(
         json.dump(output, f, indent=2)
 
     print(f"Saved evaluation + forecast to {out_path}")
+
+    html_path = f"{out_dir}/report.html"
+    build_report(output, html_path)
+    print(f"Saved dashboard to {html_path}")
+
     return out_path
 
 

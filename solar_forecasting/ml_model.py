@@ -11,7 +11,7 @@ from solar_forecasting.weather import weather_to_series
 TARGET_COLUMN = "solar_mw"
 WEATHER_FEATURE_COLUMNS = ["shortwave_radiation", "cloud_cover", "temperature_2m"]
 
-DEFAULT_LAGS = [24]  # only 1 day backweather-driven solar output doesn't
+DEFAULT_LAGS = [24]  # only 1 day backweatherdriven solar output doesn't
                     # have the same weekly seasonality as price/demand does
 
 

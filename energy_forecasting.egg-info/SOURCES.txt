@@ -9,6 +9,8 @@ ml_forecasting/__init__.py
 ml_forecasting/evaluate.py
 ml_forecasting/features.py
 ml_forecasting/predict.py
+ml_forecasting/report.py
+ml_forecasting/run_pipeline.py
 ml_forecasting/train.py
 shared/__init__.py
 shared/models.py
@@ -17,5 +19,6 @@ solar_forecasting/__init__.py
 solar_forecasting/clearsky_model.py
 solar_forecasting/evaluate.py
 solar_forecasting/ml_model.py
+solar_forecasting/report.py
 solar_forecasting/run_pipeline.py
 solar_forecasting/weather.py

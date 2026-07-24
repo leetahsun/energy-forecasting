@@ -1,14 +1,31 @@
-""" solar forecasting pipeline.
+"""End-to-end solar forecasting pipeline.
 
 Fetches historical solar generation (SMARD) and weather (Open-Meteo),
 trains the ML model, evaluates it against the physical clear-sky model on
 held-out data, then generates a forward forecast from both approaches
 using the weather forecast.
 
+IMPORTANT: SMARD's solar generation data is metered/reported with a real
+lag behind actual real-time "now" -- observed in practice to run to
+several days, well beyond the model's 24h lag feature window. This means
+the naive assumption "history ends at basically today, forecast starts
+right after" is false. Instead, this pipeline forecasts hour-by-hour,
+RECURSIVELY, starting immediately after the last genuinely known solar
+generation value, feeding each hour's prediction back in so later hours'
+lag_24h feature can reference it -- bridging gaps of any size, not just
+gaps shorter than 24h. Hours between "last known real generation" and
+actual real-time "now" are effectively a same-day nowcast filling in
+not-yet-reported data; hours beyond real "now" are the genuine forecast.
+
+This mirrors the recursive/autoregressive approach in
+ml_forecasting/predict.py, which solves the same class of problem for a
+different reason (there, hour-2-onward's rolling-window feature needs
+hour-1's own prediction; here, the gap itself can exceed the lag window).
 """
 
 import datetime
 import json
+import math
 import os
 
 import pandas as pd
@@ -29,10 +46,10 @@ from solar_forecasting.ml_model import (
     TARGET_COLUMN,
     WEATHER_FEATURE_COLUMNS,
     build_solar_feature_matrix,
-    predict_solar,
     time_based_split,
     train_solar_model,
 )
+from solar_forecasting.report import build_report
 from solar_forecasting.weather import (
     DEFAULT_LAT,
     DEFAULT_LON,
@@ -42,42 +59,69 @@ from solar_forecasting.weather import (
 )
 
 
-def build_future_solar_features(
-    history_df: pd.DataFrame,
-    forecast_weather_hourly: dict,
-) -> pd.DataFrame:
-    """Build feature rows for the forecast horizon from the weather
-    forecast,.
-    """
+def _weather_hourly_to_df(weather_hourly: dict) -> pd.DataFrame:
     weather_dfs = []
     for var in WEATHER_FEATURE_COLUMNS:
-        series = weather_to_series(forecast_weather_hourly, var)
+        series = weather_to_series(weather_hourly, var)
         df = pd.DataFrame(series, columns=["timestamp_ms", var])
         df["timestamp"] = pd.to_datetime(df["timestamp_ms"], unit="ms", utc=True)
         weather_dfs.append(df.set_index("timestamp").drop(columns="timestamp_ms"))
-    weather_df = pd.concat(weather_dfs, axis=1)
+    return pd.concat(weather_dfs, axis=1)
 
-    # The forecast endpoint returns some hours that overlap with "today"
-    future_df = weather_df[weather_df.index > history_df.index.max()].copy()
 
-    future_df["hour"] = future_df.index.hour
-    future_df["month"] = future_df.index.month
+def recursive_solar_forecast(
+    history_df: pd.DataFrame,
+    weather_hourly: dict,
+    model,
+    feature_cols: list[str],
+) -> pd.DataFrame:
+    """Predict solar generation hour-by-hour for every timestamp in
+    weather_hourly that comes after history_df's last known real
+    observation, feeding each hour's prediction back into a working
+    series so later hours' lag_24h feature can reference it.
 
-    for lag in DEFAULT_LAGS:
-        lag_timestamps = future_df.index - pd.Timedelta(hours=lag)
-        future_df[f"{TARGET_COLUMN}_lag_{lag}h"] = (
-            history_df[TARGET_COLUMN].reindex(lag_timestamps).values
-        )
+    Returns a DataFrame indexed by timestamp with the weather columns
+    plus the predicted TARGET_COLUMN, covering both the reporting-lag
+    gap (a nowcast) and the genuine forward forecast.
+    """
+    weather_df = _weather_hourly_to_df(weather_hourly)
+    future_weather = weather_df[weather_df.index > history_df.index.max()].sort_index()
 
-    if future_df.isna().any().any():
+    if future_weather.empty:
         raise ValueError(
-            "Future feature rows contain NaN:  history_df likely doesn't "
-            "cover the lag window needed (need at least "
-            f"{max(DEFAULT_LAGS)}h of prior history), or the weather "
-            "forecast doesn't align with the expected future timestamps."
+            "No weather timestamps found after history_df's last known "
+            "observation -- check that fetch_forecast_weather's past_days "
+            "covers the gap between last known generation and today."
         )
 
-    return future_df
+    working = history_df[TARGET_COLUMN].copy()
+    predictions: dict[pd.Timestamp, float] = {}
+
+    for ts, weather_row in future_weather.iterrows():
+        row = {var: weather_row[var] for var in WEATHER_FEATURE_COLUMNS}
+        row["hour"] = ts.hour
+        row["month"] = ts.month
+
+        for lag in DEFAULT_LAGS:
+            lag_ts = ts - pd.Timedelta(hours=lag)
+            if lag_ts not in working.index:
+                raise ValueError(
+                    f"Missing lag_{lag}h value for {ts} (needs {lag_ts}) -- "
+                    "the gap between last known generation and this "
+                    "timestamp exceeds the available weather/history "
+                    "coverage. Increase past_days when fetching the "
+                    "weather forecast."
+                )
+            row[f"{TARGET_COLUMN}_lag_{lag}h"] = working.loc[lag_ts]
+
+        feature_row = pd.DataFrame([row], index=[ts])[feature_cols]
+        pred = float(model.predict(feature_row)[0])
+        predictions[ts] = pred
+        working.loc[ts] = pred  # feed forward so later hours can use it
+
+    result = future_weather.copy()
+    result[TARGET_COLUMN] = pd.Series(predictions)
+    return result
 
 
 def main(
@@ -92,7 +136,8 @@ def main(
     print("Fetching historical solar generation from SMARD...")
     solar_history = fetch_history(GENERATION_FILTERS["solar"], num_weeks=num_weeks_history)
     start_date = pd.Timestamp(solar_history[0][0], unit="ms", tz="UTC").strftime("%Y-%m-%d")
-    end_date = pd.Timestamp(solar_history[-1][0], unit="ms", tz="UTC").strftime("%Y-%m-%d")
+    last_known_ts = pd.Timestamp(solar_history[-1][0], unit="ms", tz="UTC")
+    end_date = last_known_ts.strftime("%Y-%m-%d")
 
     print(f"Fetching historical weather ({start_date} to {end_date})...")
     historical_weather = fetch_historical_weather(start_date=start_date, end_date=end_date)
@@ -110,27 +155,30 @@ def main(
     )
     print(format_comparison_summary(comparison))
 
-    print(f"Fetching {forecast_days}-day weather forecast:")
-    forecast_weather = fetch_forecast_weather(forecast_days=forecast_days)
+    # The gap between "last known real generation" and "today" can exceed
+    # the model's 24h lag window (observed to run to several days in
+    # practice) -- fetch enough past_days of weather to cover that whole
+    # gap, not just the forward forecast, so recursive_solar_forecast has
+    # a continuous timestamp range to work with.
+    now = pd.Timestamp.now(tz="UTC")
+    gap_days = max(0, math.ceil((now - last_known_ts).total_seconds() / 86400)) + 1
+    past_days = min(gap_days, 92)  # Open-Meteo's documented limit
+    print(f"Fetching weather (past_days={past_days}, forecast_days={forecast_days})...")
+    forecast_weather = fetch_forecast_weather(forecast_days=forecast_days, past_days=past_days)
 
-    print("Building forecast feature rows:")
-    future_df = build_future_solar_features(df, forecast_weather)
+    print("Generating ML forecast (recursive, bridging the reporting-lag gap)...")
+    future_result = recursive_solar_forecast(df, forecast_weather, model, feature_cols)
 
-    print("Generating ML forecast:")
-    ml_forecast = predict_solar(model, feature_cols, future_df)
-
-    print("Generating physical forecast:")
-
+    print("Generating physical forecast for the same timestamps...")
+    future_ts_ms = _index_to_epoch_ms(future_result.index)
+    future_irradiance = estimate_irradiance_series(
+        future_ts_ms, future_result["cloud_cover"].tolist(), lat=DEFAULT_LAT, lon=DEFAULT_LON
+    )
     all_ts_ms = _index_to_epoch_ms(df.index)
     all_irradiance = estimate_irradiance_series(
         all_ts_ms, df["cloud_cover"].tolist(), lat=DEFAULT_LAT, lon=DEFAULT_LON
     )
     scale_factor = calibrate_scale_factor(all_irradiance, df[TARGET_COLUMN].tolist())
-
-    future_ts_ms = _index_to_epoch_ms(future_df.index)
-    future_irradiance = estimate_irradiance_series(
-        future_ts_ms, future_df["cloud_cover"].tolist(), lat=DEFAULT_LAT, lon=DEFAULT_LON
-    )
     physical_forecast = [predict_generation(irr, scale_factor) for irr in future_irradiance]
 
     output = {
@@ -142,17 +190,25 @@ def main(
                 "ml_forecast_mw": float(ml_val),
                 "physical_forecast_mw": float(phys_val),
             }
-            for ts, ml_val, phys_val in zip(future_df.index, ml_forecast, physical_forecast)
+            for ts, ml_val, phys_val in zip(
+                future_result.index, future_result[TARGET_COLUMN], physical_forecast
+            )
         ],
     }
 
     out_path = f"{out_dir}/forecast.json"
     with open(out_path, "w") as f:
         json.dump(output, f, indent=2)
-
     print(f"Saved forecast + evaluation to {out_path}")
+
+    html_path = f"{out_dir}/forecast.html"
+    build_report(output, html_path)
+    print(f"Saved dashboard to {html_path}")
+
     return out_path
 
 
+if __name__ == "__main__":
+    main()
 if __name__ == "__main__":
     main()

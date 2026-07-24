@@ -10,12 +10,6 @@ Two stages:
 2. Cloud cover -> attenuation of that clear-sky irradiance (empirical
 approximation, since real atmospheric radiative transfer is far more
 complex than this project needs)
-
-
-This is a simplified clear-sky model, not a full atmospheric radiative
-transfer model (e.g. it ignores the equation of time, atmospheric
-turbidity variation, and elevation/altitude effects). It's intended to
-be a reasonable, explainable approximation.
 """
 
 import math
@@ -24,7 +18,7 @@ from datetime import datetime, timezone
 import numpy as np
 
 SOLAR_CONSTANT_W_M2 = 1361.0  # extraterrestrial solar irradiance
-EXTINCTION_COEFFICIENT = 0.6   # rough atmospheric attenuation, clear-sky, sea-level-ish
+EXTINCTION_COEFFICIENT = 0.6   # rough atmospheric attenuation in a clearsky and at sea level-ish
 CLOUD_ATTENUATION_FACTOR = 0.75  # fraction of clear-sky irradiance blocked at 100% cloud cover
 
 
@@ -76,10 +70,6 @@ def clear_sky_irradiance(dt: datetime, lat: float, lon: float) -> float:
 
 def apply_cloud_attenuation(clear_sky_w_m2: float, cloud_cover_pct: float) -> float:
     """Reduce clear sky irradiance based on cloud cover (0-100%).
-
-    Linear approximation: 0% cloud cover -> no attenuation, 100% cloud
-    cover -> CLOUD_ATTENUATION_FACTOR not 100%, since some
-    diffuse radiation still gets through overcast skies.
     """
     cloud_fraction = max(0.0, min(100.0, cloud_cover_pct)) / 100
     return clear_sky_w_m2 * (1 - CLOUD_ATTENUATION_FACTOR * cloud_fraction)
@@ -108,10 +98,7 @@ def calibrate_scale_factor(
     irradiance_w_m2: list[float], actual_generation_mw: list[float]
 ) -> float:
     """Fit a single linear scale factor (MW per W/m^2) mapping estimated
-    irradiance to actual solar generation, via least-squares through the
-    origin (generation = scale * irradiance, no intercept zero
-    irradiance should mean zero generation).
-    """
+    irradiance to actual solar generation."""
     irr = np.array(irradiance_w_m2, dtype=float)
     gen = np.array(actual_generation_mw, dtype=float)
 

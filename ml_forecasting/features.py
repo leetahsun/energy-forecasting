@@ -36,7 +36,12 @@ def build_base_dataframe(
     price_df = _series_to_df(price_series, "price_eur_mwh")
 
     combined = gen_df[["renewable_share_pct"]].join(price_df, how="inner")
-    return combined.sort_index()
+    combined = combined.sort_index()
+    last_valid = combined.dropna().index.max()
+    if pd.notna(last_valid):
+        combined = combined.loc[:last_valid]
+
+    return combined
 
 
 def add_calendar_features(df: pd.DataFrame) -> pd.DataFrame:

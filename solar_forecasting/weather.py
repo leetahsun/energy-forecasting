@@ -26,7 +26,10 @@ def fetch_historical_weather(
     lat: float = DEFAULT_LAT,
     lon: float = DEFAULT_LON,
 ) -> dict:
-    """Fetch historical hourly weather.
+
+    """Fetch historical hourly weather for [start_date, end_date]
+    (YYYY-MM-DD strings, inclusive). Returns Open-Meteo's raw 'hourly'
+    dict: {"time": [...], "shortwave_radiation": [...], ...}.
     """
     params = {
         "latitude": lat,
@@ -38,22 +41,30 @@ def fetch_historical_weather(
     }
     resp = requests.get(ARCHIVE_URL, params=params, timeout=30)
     resp.raise_for_status()
-    return resp.json()["hourly"]
-
+    return resp.json()["hourly"] 
 
 def fetch_forecast_weather(
     forecast_days: int = 2,
+    past_days: int = 0,
     lat: float = DEFAULT_LAT,
     lon: float = DEFAULT_LON,
 ) -> dict:
-    """Fetch upcoming hourly weather. Returns the same 'hourly' dict shape as
-    fetch_historical_weather, so both can be processed identically.
+    """Fetch hourly weather covering `past_days` of recent history plus
+    `forecast_days` ahead, in one request.
+
+    past_days matters beyond convenience: SMARD's actual solar generation
+    reporting lags real-time by an observed multi-day margin (see
+    run_pipeline.py's recursive_solar_forecast), so bridging the gap
+    between "last known real generation" and "today" requires weather
+    data for that whole gap, not just the forward forecast window.
+    Open-Meteo documents support for past_days up to 92.
     """
     params = {
         "latitude": lat,
         "longitude": lon,
         "hourly": ",".join(HOURLY_VARS),
         "forecast_days": forecast_days,
+        "past_days": past_days,
         "timezone": "UTC",
     }
     resp = requests.get(FORECAST_URL, params=params, timeout=30)
@@ -62,7 +73,11 @@ def fetch_forecast_weather(
 
 
 def weather_to_series(hourly: dict, variable: str) -> list[tuple[int, float]]:
-    """Convert Open-Meteo's hourly dict format into the samemshape used throughout the rest of the project.
+    """Convert Open-Meteo's hourly dict format into the same
+    [(timestamp_ms, value), ...] shape used throughout the rest of this
+    project (matching shared/smard_client.py's series format), so solar
+    forecasting can reuse the same feature-building patterns as
+    ml_forecasting.
     """
     import pandas as pd
 
