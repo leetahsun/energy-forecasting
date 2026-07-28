@@ -140,7 +140,7 @@ def build_report(report: dict, out_path: str) -> str:
     {_build_stat_cards(report)}
     <div class="chart-wrap">{chart_html}</div>
     <p class="note">
-    Improvement is measured on held-out data the model never trained
+    Improvement is measured on held out data the model never trained
     on. 
     </p>
     """
