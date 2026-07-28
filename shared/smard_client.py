@@ -1,5 +1,5 @@
-
 import requests
+from shared.http_retry import get_with_retry
 
 #SMARD is an abbreviation of the German term "Strommarktdaten", which translates to electricity market data. 
 #Data that is published on the SMARD website gives an up-to-date overview of what is happening on the electricity market. 
@@ -40,8 +40,7 @@ def get_index_timestamps(filter_id: int) -> list[int]:
     """Get all available weekly bucket timestamps for each filter, starting with the oldest first. -> not
     able to get data between X and Y date directly"""
     url = f"{BASE}/{filter_id}/{REGION}/index_{RESOLUTION}.json"
-    resp = requests.get(url, timeout=30)
-    resp.raise_for_status()
+    resp = get_with_retry(url, timeout=30)
     return resp.json()["timestamps"]
 
 
@@ -49,8 +48,7 @@ def get_series(filter_id: int, timestamp: int) -> list[tuple[int, float]]:
     """Fetch one weekly bucket's time series for a filter
     Each pair  here is one hourly data point which  is a timestamp and a value"""
     url = f"{BASE}/{filter_id}/{REGION}/{filter_id}_{REGION}_{RESOLUTION}_{timestamp}.json"
-    resp = requests.get(url, timeout=30)
-    resp.raise_for_status()
+    resp = get_with_retry(url, timeout=30)
     return resp.json()["series"]
 
 
