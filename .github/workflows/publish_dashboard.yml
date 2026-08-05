@@ -25,28 +25,30 @@ jobs:
 
       - name: Run ML forecasting pipeline
         run: python -m ml_forecasting.run_pipeline
-        continue-on-error: true  #so that it doesn't let one module's failure block the other's dashboard
+        continue-on-error: true  # so it doesn't let one module's failure block the other's dashboard
 
       - name: Run solar forecasting pipeline
         run: python -m solar_forecasting.run_pipeline
         continue-on-error: true
 
-      - name: Debug -- inspect filesystem state
-        run: |
-          echo "=== pwd ==="
-          pwd
-          echo "=== GITHUB_WORKSPACE ==="
-          echo "$GITHUB_WORKSPACE"
-          echo "=== find reports/ ==="
-          find reports -type f -o -type d 2>&1 || echo "reports/ does not exist at all"
-          echo "=== top-level ls -la ==="
-          ls -la
-
       - name: Assemble combined site
         run: |
           mkdir -p public
-          cp reports/ml_forecast/*/report.html public/ml_forecast.html 2>/dev/null || echo "ML report missing"
-          cp reports/solar_forecast/*/forecast.html public/solar_forecast.html 2>/dev/null || echo "Solar report missing"
+
+          LATEST_ML=$(ls -1d reports/ml_forecast/*/ 2>/dev/null | sort | tail -n 1)
+          if [ -n "$LATEST_ML" ] && [ -f "${LATEST_ML}report.html" ]; then
+            cp "${LATEST_ML}report.html" public/ml_forecast.html
+          else
+            echo "ML report missing"
+          fi
+
+          LATEST_SOLAR=$(ls -1d reports/solar_forecast/*/ 2>/dev/null | sort | tail -n 1)
+          if [ -n "$LATEST_SOLAR" ] && [ -f "${LATEST_SOLAR}forecast.html" ]; then
+            cp "${LATEST_SOLAR}forecast.html" public/solar_forecast.html
+          else
+            echo "Solar report missing"
+          fi
+
           python -m shared.build_index public/index.html
 
       - uses: actions/upload-pages-artifact@v3
