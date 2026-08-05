@@ -25,11 +25,22 @@ jobs:
 
       - name: Run ML forecasting pipeline
         run: python -m ml_forecasting.run_pipeline
-        continue-on-error: true  # don't let one module's failure block the other's dashboard
+        continue-on-error: true  #so that it doesn't let one module's failure block the other's dashboard
 
       - name: Run solar forecasting pipeline
         run: python -m solar_forecasting.run_pipeline
         continue-on-error: true
+
+      - name: Debug -- inspect filesystem state
+        run: |
+          echo "=== pwd ==="
+          pwd
+          echo "=== GITHUB_WORKSPACE ==="
+          echo "$GITHUB_WORKSPACE"
+          echo "=== find reports/ ==="
+          find reports -type f -o -type d 2>&1 || echo "reports/ does not exist at all"
+          echo "=== top-level ls -la ==="
+          ls -la
 
       - name: Assemble combined site
         run: |
